@@ -1,0 +1,5 @@
+build/*
+.vs/*
+.vscode/*
+res/volumes*
+imgui.ini
