@@ -6,6 +6,73 @@
 #include <fstream>
 #include <algorithm>
 
+
+
+//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+
+// Volume Material
+
+VolumeMaterial::VolumeMaterial(glm::vec4 color)
+{
+	this->color = color;
+	this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume.fs");
+}
+
+VolumeMaterial::~VolumeMaterial() {}
+
+void VolumeMaterial::setUniforms(Camera* camera, glm::mat4 model)
+{
+	// Upload node uniforms
+	this->shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+	this->shader->setUniform("u_camera_position", camera->eye);
+	this->shader->setUniform("u_model", model);
+	this->shader->setUniform("u_absorption_coefficient", this->absorption_coefficient);
+	this->shader->setUniform("u_color", this->color);	
+	
+}
+
+void VolumeMaterial::render(Mesh* mesh, glm::mat4 model, Camera* camera)
+{
+	if (mesh && this->shader) {
+		// Enable shader
+		this->shader->enable();
+
+		// Upload uniforms
+		setUniforms(camera, model);
+
+		// Do the draw call
+		mesh->render(GL_TRIANGLES);
+
+		this->shader->disable();
+	}
+}
+
+void VolumeMaterial::renderInMenu()
+{
+	ImGui::Text("Material Type: %s", std::string("Flat").c_str());
+
+	ImGui::ColorEdit3("Color", (float*)&this->color);
+
+	ImGui::SliderFloat("Absorption Coefficient", &this->absorption_coefficient, 0.0f, 10.0f);
+	ImGui::ColorEdit3("Background Color", (float*)&Application::instance->background_color);
+}
+
+
+
+//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 FlatMaterial::FlatMaterial(glm::vec4 color)
 {
 	this->color = color;

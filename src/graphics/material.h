@@ -15,11 +15,25 @@ public:
 	Shader* shader = NULL;
 	Texture* texture = NULL;
 	glm::vec4 color;
+	float absorption_coefficient;
+
 
 	virtual void setUniforms(Camera* camera, glm::mat4 model) = 0;
 	virtual void render(Mesh* mesh, glm::mat4 model, Camera* camera) = 0;
 	virtual void renderInMenu() = 0;
 };
+
+class VolumeMaterial : public Material {
+public:
+
+	VolumeMaterial(glm::vec4 color = glm::vec4(1.f));
+	~VolumeMaterial();
+
+	void setUniforms(Camera* camera, glm::mat4 model);
+	void render(Mesh* mesh, glm::mat4 model, Camera* camera);
+	void renderInMenu();
+};
+
 
 class FlatMaterial : public Material {
 public:
@@ -31,6 +45,9 @@ public:
 	void render(Mesh* mesh, glm::mat4 model, Camera* camera);
 	void renderInMenu();
 };
+
+
+
 
 class WireframeMaterial : public FlatMaterial {
 public:

@@ -22,11 +22,22 @@ void Application::init(GLFWwindow* window)
 
     this->ambient_light = glm::vec4(0.75f, 0.75f, 0.75f, 1.f);
 
-    /* ADD NODES TO THE SCENE */
-    SceneNode* example = new SceneNode("Example Node");
-    example->mesh = Mesh::Get("res/meshes/sphere.obj");
-    example->material = new StandardMaterial();
-    this->node_list.push_back(example);
+    /* ADD SCENENODES TO THE SCENE */
+
+
+    //Original Node
+    //SceneNode* example = new SceneNode("Example Node");
+    //example->mesh = Mesh::Get("res/meshes/sphere.obj");
+    //example->material = new StandardMaterial();
+    //this->node_list.push_back(example);
+
+    SceneNode* VolumeNode = new SceneNode("Volume Node");
+    VolumeNode->mesh = Mesh::Get("res/meshes/cube.obj");
+    VolumeNode->material = new VolumeMaterial();
+	VolumeNode->material->absorption_coefficient = 2;
+	VolumeNode->material->color = glm::vec4(0.2f, 0.7f, 0.9f, 1.f);
+    this->node_list.push_back(VolumeNode);
+
 }
 
 void Application::update(float dt)
@@ -42,7 +53,7 @@ void Application::update(float dt)
 void Application::render()
 {
     // Set the clear color (the background color)
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(this->background_color.x, this->background_color.y, this->background_color.z, this->transparency);
 
     // Clear the window and the depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
