@@ -17,7 +17,7 @@
 VolumeMaterial::VolumeMaterial(glm::vec4 color)
 {
 	this->color = color;
-	this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume.fs");
+	this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume_2.fs");
 }
 
 VolumeMaterial::~VolumeMaterial() {}
@@ -30,6 +30,11 @@ void VolumeMaterial::setUniforms(Camera* camera, glm::mat4 model)
 	this->shader->setUniform("u_model", model);
 	this->shader->setUniform("u_absorption_coefficient", this->absorption_coefficient);
 	this->shader->setUniform("u_color", this->color);	
+	this->shader->setUniform("stepLength", stepLength);
+	this->shader->setUniform("choose_value1", choose_value1);
+	this->shader->setUniform("choose_value2", choose_value2);
+	this->shader->setUniform("choose_value3", choose_value3);
+
 	
 }
 
@@ -40,6 +45,8 @@ void VolumeMaterial::render(Mesh* mesh, glm::mat4 model, Camera* camera)
 		this->shader->enable();
 
 		// Upload uniforms
+		this->shader->setUniform("u_min", mesh->aabb_min);
+		this->shader->setUniform("u_max", mesh->aabb_max);
 		setUniforms(camera, model);
 
 		// Do the draw call
@@ -55,8 +62,11 @@ void VolumeMaterial::renderInMenu()
 
 	ImGui::ColorEdit3("Color", (float*)&this->color);
 
-	ImGui::SliderFloat("Absorption Coefficient", &this->absorption_coefficient, 0.0f, 10.0f);
 	ImGui::ColorEdit3("Background Color", (float*)&Application::instance->background_color);
+	ImGui::SliderFloat("Step Length", &this->stepLength, 0.001f, 1.f);
+	ImGui::SliderFloat("Choose Value 1", &this->choose_value1, 0.01f, 1.f);
+	ImGui::SliderFloat("Choose Value 2", &this->choose_value2, 0.01f, 1.f);
+	ImGui::SliderFloat("Choose Value 3", &this->choose_value3, 0.01f, 1.f);
 }
 
 

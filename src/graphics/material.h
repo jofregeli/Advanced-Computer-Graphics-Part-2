@@ -32,6 +32,13 @@ public:
 	void setUniforms(Camera* camera, glm::mat4 model);
 	void render(Mesh* mesh, glm::mat4 model, Camera* camera);
 	void renderInMenu();
+
+private:
+	float stepLength = 0.01f;
+	float choose_value1 = 1.f;
+	float choose_value2 = 1.f;
+	float choose_value3 = 1.f;
+
 };
 
 

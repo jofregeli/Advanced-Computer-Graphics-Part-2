@@ -4,6 +4,8 @@ uniform vec4  u_color;                   // B: background color
 uniform float u_absorption_coefficient;  // mu_a
 uniform vec3  u_camera_position;
 uniform mat4  u_model;
+uniform vec3  u_max;
+uniform vec3  u_min;
 
 in vec3 v_world_position; // desde basic.vs
 out vec4 FragColor;
@@ -37,8 +39,8 @@ void main()
     vec3 rd = normalize((invM * vec4(rayW.direction, 0.0)).xyz);
 
     // 2) Intersección con AABB del volumen en OBJETO
-    const vec3 boxMin = vec3(-0.5);
-    const vec3 boxMax = vec3( 0.5);
+    vec3 boxMin = u_min;
+    vec3 boxMax = u_max;
     vec2 tHit = intersectAABB(ro, rd, boxMin, boxMax);
 
     float tEnter = tHit.x;
