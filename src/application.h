@@ -16,7 +16,7 @@ public:
 	std::vector<SceneNode*> node_list;
 	glm::vec4 ambient_light;
 	std::vector<Light*> light_list;
-	glm::vec3 background_color = glm::vec3(0.1f, 0.1f, 0.1f);
+	glm::vec3 background_color = glm::vec3(1.f, 1.f, 1.f);
 	float transparency = 1.f; 
 
 	int window_width;

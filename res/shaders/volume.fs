@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform vec4  u_color;                   // B: background color
+uniform vec3  ub_color;                   // B: background color
 uniform float u_absorption_coefficient;  // mu_a
 uniform vec3  u_camera_position;
 uniform mat4  u_model;
@@ -58,7 +58,7 @@ void main()
     float T = exp(-u_absorption_coefficient * thickness);
 
     // 5) Radiancia final: L = B * T
-    vec3 B = u_color.rgb;
+    vec3 B = ub_color;
     vec3 L = B * T;
 
     FragColor = vec4(L, 1.0);

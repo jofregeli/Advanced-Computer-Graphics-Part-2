@@ -17,7 +17,11 @@
 VolumeMaterial::VolumeMaterial(glm::vec4 color)
 {
 	this->color = color;
-	this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume_2.fs");
+
+
+	this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume.fs");
+
+
 }
 
 VolumeMaterial::~VolumeMaterial() {}
@@ -29,11 +33,18 @@ void VolumeMaterial::setUniforms(Camera* camera, glm::mat4 model)
 	this->shader->setUniform("u_camera_position", camera->eye);
 	this->shader->setUniform("u_model", model);
 	this->shader->setUniform("u_absorption_coefficient", this->absorption_coefficient);
-	this->shader->setUniform("u_color", this->color);	
+	this->shader->setUniform("ub_color", Application::instance->background_color);	
 	this->shader->setUniform("stepLength", stepLength);
 	this->shader->setUniform("choose_value1", choose_value1);
 	this->shader->setUniform("choose_value2", choose_value2);
 	this->shader->setUniform("choose_value3", choose_value3);
+	this->shader->setUniform("u_emission_color", this->color);
+	this->shader->setUniform("ac", this->absorptionCoefficient);
+	this->shader->setUniform("use_random_le", use_random_le);
+
+
+
+
 
 	
 }
@@ -63,10 +74,33 @@ void VolumeMaterial::renderInMenu()
 	ImGui::ColorEdit3("Color", (float*)&this->color);
 
 	ImGui::ColorEdit3("Background Color", (float*)&Application::instance->background_color);
-	ImGui::SliderFloat("Step Length", &this->stepLength, 0.001f, 1.f);
+	ImGui::SliderFloat("Step Length", &this->stepLength, 0.01f, 1.f);
 	ImGui::SliderFloat("Choose Value 1", &this->choose_value1, 0.01f, 1.f);
 	ImGui::SliderFloat("Choose Value 2", &this->choose_value2, 0.01f, 1.f);
 	ImGui::SliderFloat("Choose Value 3", &this->choose_value3, 0.01f, 1.f);
+	
+
+	const char* shader_options[] = { "Homogeneous Absorption", "Heterogeneous Absorption", "Amborption + Emission" };
+
+	if (ImGui::Combo("Shader Type", &using_shader, shader_options, 3))
+	{
+
+		// Recarga el shader correspondiente
+		if (using_shader == 0) {
+			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume.fs");
+		}
+		else if (using_shader == 1) {
+			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume_2.fs");
+		}
+		else {
+			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume_3.fs");
+		}
+		
+	}
+
+	ImGui::SliderFloat("Absorption Coefficient", &this->absorptionCoefficient, 0.01f, 10.f);
+	ImGui::Checkbox("Use Random Light Emission", &this->use_random_le);
+	
 }
 
 

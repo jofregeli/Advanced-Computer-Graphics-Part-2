@@ -14,7 +14,7 @@ public:
 
 	Shader* shader = NULL;
 	Texture* texture = NULL;
-	glm::vec4 color;
+	glm::vec3 color;
 	float absorption_coefficient;
 
 
@@ -26,18 +26,23 @@ public:
 class VolumeMaterial : public Material {
 public:
 
-	VolumeMaterial(glm::vec4 color = glm::vec4(1.f));
+	VolumeMaterial(glm::vec4 color = glm::vec4(1.f, 1.f, 1.f, 1.f));
 	~VolumeMaterial();
 
 	void setUniforms(Camera* camera, glm::mat4 model);
 	void render(Mesh* mesh, glm::mat4 model, Camera* camera);
 	void renderInMenu();
 
-private:
+	int using_shader = 1;
 	float stepLength = 0.01f;
 	float choose_value1 = 1.f;
 	float choose_value2 = 1.f;
 	float choose_value3 = 1.f;
+	float absorptionCoefficient = 1.f;
+	bool use_random_le = true;
+
+private:
+
 
 };
 
@@ -45,7 +50,7 @@ private:
 class FlatMaterial : public Material {
 public:
 
-	FlatMaterial(glm::vec4 color = glm::vec4(1.f));
+	FlatMaterial(glm::vec4 color = glm::vec4(1.f, 1.f, 1.f, 1.f));
 	~FlatMaterial();
 
 	void setUniforms(Camera* camera, glm::mat4 model);
@@ -74,7 +79,7 @@ public:
 	Shader* base_shader = NULL;
 	Shader* normal_shader = NULL;
 
-	StandardMaterial(glm::vec4 color = glm::vec4(1.f));
+	StandardMaterial(glm::vec4 color = glm::vec4(1.f, 1.f, 1.f, 1.f));
 	~StandardMaterial();
 
 	void setUniforms(Camera* camera, glm::mat4 model);

@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform vec4  u_color;                   // B: background color
+uniform vec3  ub_color;                   // B: background color
 uniform vec3  u_camera_position;
 uniform mat4  u_model;
 uniform vec3  u_max;
@@ -9,6 +9,8 @@ uniform float stepLength;
 uniform float choose_value1;
 uniform float choose_value2;
 uniform float choose_value3;
+uniform float ac;
+
 
 in vec3 v_world_position; // desde basic.vs
 out vec4 FragColor;
@@ -127,13 +129,13 @@ void main()
     
     while(t < t_max){
         vec3 position = ro + rd * (tEnter + t);
-        float u_absorption_coefficient = GetAbsorptionCoefficient(position, choose_value1, choose_value2, choose_value3);
+        float u_absorption_coefficient = ac * GetAbsorptionCoefficient(position, choose_value1, choose_value2, choose_value3);
 
         tao += u_absorption_coefficient * stepLength;
         t += stepLength;
     }
 
-    vec3 L = u_color.rgb * exp(-tao);
+    vec3 L = ub_color * exp(-tao);
 
     FragColor = vec4(L, 1.0);
     
