@@ -31,13 +31,28 @@ void Application::init(GLFWwindow* window)
     //example->material = new StandardMaterial();
     //this->node_list.push_back(example);
 
-    SceneNode* VolumeNode = new SceneNode("Volume Node");
-    VolumeNode->mesh = Mesh::Get("res/meshes/cube.obj");
-    VolumeNode->material = new VolumeMaterial();
-	VolumeNode->material->absorption_coefficient = 2;
-	VolumeNode->material->color = glm::vec4(0.2f, 0.7f, 0.9f, 1.f);
-    this->node_list.push_back(VolumeNode);
+ //   SceneNode* VolumeNode = new SceneNode("Volume Node");
+ //   VolumeNode->mesh = Mesh::Get("res/meshes/cube.obj");
+ //   VolumeNode->material = new VolumeMaterial();
+	//VolumeNode->material->absorption_coefficient = 2;
+	//VolumeNode->material->color = glm::vec4(0.2f, 0.7f, 0.9f, 1.f);
+ //   this->node_list.push_back(VolumeNode);
 
+
+    SceneNode* bunnyNode = new SceneNode("Bunny Node");
+    bunnyNode->mesh = Mesh::Get("res/meshes/cube.obj");
+    bunnyNode->material = new VolumeMaterial();
+
+    easyVDB::OpenVDBReader* vdbReader = new easyVDB::OpenVDBReader();
+    vdbReader->read("res/VDB/bunny_cloud.vdb");
+
+    static_cast<VolumeMaterial*>(bunnyNode->material)->estimate3DTexture(vdbReader);
+    this->node_list.push_back(bunnyNode);
+
+    Light* light = new Light();
+    // Initial Light Position (Optional but recommended for visibility)
+    this->light_list.push_back(light);
+    this->node_list.push_back(light);
 }
 
 void Application::update(float dt)

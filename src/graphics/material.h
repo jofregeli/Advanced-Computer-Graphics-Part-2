@@ -3,6 +3,9 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/matrix.hpp>
+#include <openvdbReader.h>
+#include <grid.h>
+#include <bbox.h>
 
 #include "../framework/camera.h"
 #include "mesh.h"
@@ -32,6 +35,9 @@ public:
 	void setUniforms(Camera* camera, glm::mat4 model);
 	void render(Mesh* mesh, glm::mat4 model, Camera* camera);
 	void renderInMenu();
+	void loadVDB(std::string file_path);
+	void estimate3DTexture(easyVDB::OpenVDBReader* vdbReader);
+
 
 	int using_shader = 1;
 	float stepLength = 0.01f;
