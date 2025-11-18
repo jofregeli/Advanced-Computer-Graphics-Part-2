@@ -17,7 +17,7 @@ public:
 
 	Shader* shader = NULL;
 	Texture* texture = NULL;
-	glm::vec3 color;
+	glm::vec4 color;
 	float absorption_coefficient;
 
 
@@ -45,6 +45,8 @@ public:
 	float choose_value2 = 1.f;
 	float choose_value3 = 1.f;
 	float absorptionCoefficient = 1.f;
+	float scatteringTerm = 1.f; 
+	float light_emission = 1.f; 
 	bool use_random_le = true;
 
 private:

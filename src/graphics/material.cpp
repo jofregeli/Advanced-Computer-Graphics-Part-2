@@ -46,16 +46,22 @@ void VolumeMaterial::setUniforms(Camera* camera, glm::mat4 model)
 	this->shader->setUniform("choose_value3", choose_value3);
 	this->shader->setUniform("u_emission_color", this->color);
 	this->shader->setUniform("ac", this->absorptionCoefficient);
+	this->shader->setUniform("sc", this->scatteringTerm);
+
+
 	this->shader->setUniform("use_random_le", use_random_le);
 
 	// FIX 1: Bind the texture correctly
-	if (this->texture) {
-		this->shader->setUniform("u_volume_texture", this->texture, 0);
-		this->shader->setUniform("u_source_type", 1); // 1 = VDB
-	}
-	else {
-		this->shader->setUniform("u_source_type", 0); // 0 = Noise
-	}
+	this->shader->setUniform("u_volume_texture", this->texture, 0);
+
+
+	
+
+	Application::instance->light_list[0]->setUniforms(this->shader, model);
+
+
+	
+
 }
 
 void VolumeMaterial::render(Mesh* mesh, glm::mat4 model, Camera* camera)
@@ -108,6 +114,7 @@ void VolumeMaterial::renderInMenu()
 	}
 
 	ImGui::SliderFloat("Absorption Coefficient", &this->absorptionCoefficient, 0.01f, 10.f);
+	ImGui::SliderFloat("Scattering Term", &this->scatteringTerm, 0.01f, 10.f);
 	ImGui::Checkbox("Use Random Light Emission", &this->use_random_le);
 	
 }
@@ -235,7 +242,6 @@ void FlatMaterial::setUniforms(Camera* camera, glm::mat4 model)
 	this->shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 	this->shader->setUniform("u_camera_position", camera->eye);
 	this->shader->setUniform("u_model", model);
-
 	this->shader->setUniform("u_color", this->color);
 }
 

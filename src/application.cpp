@@ -43,14 +43,13 @@ void Application::init(GLFWwindow* window)
     bunnyNode->mesh = Mesh::Get("res/meshes/cube.obj");
     bunnyNode->material = new VolumeMaterial();
 
-    easyVDB::OpenVDBReader* vdbReader = new easyVDB::OpenVDBReader();
-    vdbReader->read("res/VDB/bunny_cloud.vdb");
 
-    static_cast<VolumeMaterial*>(bunnyNode->material)->estimate3DTexture(vdbReader);
+    static_cast<VolumeMaterial*>(bunnyNode->material)->loadVDB("res/VDB/bunny_cloud.vdb");
     this->node_list.push_back(bunnyNode);
 
     Light* light = new Light();
-    // Initial Light Position (Optional but recommended for visibility)
+
+
     this->light_list.push_back(light);
     this->node_list.push_back(light);
 }
