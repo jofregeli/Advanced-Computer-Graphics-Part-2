@@ -53,6 +53,7 @@ void VolumeMaterial::setUniforms(Camera* camera, glm::mat4 model)
 
 	// FIX 1: Bind the texture correctly
 	this->shader->setUniform("u_volume_texture", this->texture, 0);
+	this->shader->setUniform("g_value", this->g_value);
 
 
 	
@@ -95,20 +96,18 @@ void VolumeMaterial::renderInMenu()
 	ImGui::SliderFloat("Choose Value 3", &this->choose_value3, 0.01f, 1.f);
 	
 
-	const char* shader_options[] = { "Homogeneous Absorption", "Heterogeneous Absorption", "Amborption + Emission" };
+	const char* shader_options[] = { "Basic Bunny", "Advanced Bunny"};
 
-	if (ImGui::Combo("Shader Type", &using_shader, shader_options, 3))
+	if (ImGui::Combo("Shader Type", &using_shader, shader_options, 2))
 	{
 
 		// Recarga el shader correspondiente
 		if (using_shader == 0) {
-			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume.fs");
+			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/bunny.fs");
 		}
-		else if (using_shader == 1) {
-			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume_2.fs");
-		}
+
 		else {
-			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/volume_3.fs");
+			this->shader = Shader::Get("res/shaders/basic.vs", "res/shaders/bunny_fx.fs");
 		}
 		
 	}
@@ -116,6 +115,9 @@ void VolumeMaterial::renderInMenu()
 	ImGui::SliderFloat("Absorption Coefficient", &this->absorptionCoefficient, 0.01f, 10.f);
 	ImGui::SliderFloat("Scattering Term", &this->scatteringTerm, 0.01f, 10.f);
 	ImGui::Checkbox("Use Random Light Emission", &this->use_random_le);
+
+
+	ImGui::SliderFloat("g Value", &this->g_value, -1.f, 1.f);
 	
 }
 

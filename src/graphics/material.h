@@ -39,7 +39,7 @@ public:
 	void estimate3DTexture(easyVDB::OpenVDBReader* vdbReader);
 
 
-	int using_shader = 1;
+	int using_shader = 0;
 	float stepLength = 0.01f;
 	float choose_value1 = 1.f;
 	float choose_value2 = 1.f;
@@ -47,6 +47,7 @@ public:
 	float absorptionCoefficient = 1.f;
 	float scatteringTerm = 1.f; 
 	float light_emission = 1.f; 
+	float g_value = 0.f;
 	bool use_random_le = true;
 
 private:

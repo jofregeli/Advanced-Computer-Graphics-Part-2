@@ -34,7 +34,6 @@ uniform bool use_random_le;
 
 uniform float g_value; 
 
-
 in vec3 v_world_position; 
 out vec4 FragColor;
 
@@ -102,18 +101,14 @@ vec2 intersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 boxMin, vec3 boxMax) {
 }
 
 // --- TASK 3.2: INNER INTEGRAL (Shadow Ray) ---
-// "Compute Ls(t')... requires a new ray-marching to the existing light sources" [cite: 43]
 float getLightTransmittance(vec3 pos) {
-    // 1. Init ray to light source [cite: 41]
     vec3 toLight = u_local_light_position - pos;
     float distToLight = length(toLight);
     vec3 lightDir = normalize(toLight);
     
-    // 2. Find intersection values (Back intersection) [cite: 42]
     vec2 tHit = intersectAABB(pos, lightDir, u_min, u_max);
     float tExit = tHit.y; 
 
-    // We march until we hit the volume wall OR the light itself
     float marchDist = min(tExit, distToLight);
     if (marchDist <= 0.0) return 1.0; 
 
@@ -121,23 +116,15 @@ float getLightTransmittance(vec3 pos) {
     float t_curr = 0.0;
     float opticalDepth = 0.0;
 
-    // 3. Imitate the integral as a while loop 
-    // "Accumulate an second optical thickness value" [cite: 44]
     while(t_curr < marchDist) {
         vec3 samplePos = pos + lightDir * (t_curr + 0.5 * stepSize);
-        
         float d = GetDensity(samplePos);
-        
         if(d > 0.0) {
-             // Extinction coefficient mu_t = mu_a + mu_s
             float mu_t = ac + sc;
             opticalDepth += d * mu_t * stepSize;
         }
-        
         t_curr += stepSize;
     }
-    
-    // Transmittance T = exp(-opticalDepth)
     return exp(-opticalDepth);
 }
 
@@ -162,55 +149,45 @@ void main() {
     float T = 1.0; 
     vec3 L = vec3(0.0);
 
-    t += stepLength * 0.5; 
-
-    // "The new term takes place inside the integral so we can reuse our already existing loop" 
-    while(t < t_end) {
-        vec3 pos = ro + rd * t;
+    // March con paso adaptado para cubrir el último segmento sin duplicar código
+    while (t < t_end) {
+        float h = min(stepLength, t_end - t);               // paso actual
+        vec3 pos = ro + rd * (t + 0.5 * h);                 // muestreo en el centro del segmento
         float density = GetDensity(pos);
 
-        if(density > 0.001) {
-            // Get coefficients at this position [cite: 44]
+        if (density > 0.001) {
             float mu_a = ac * density;
             float mu_s = sc * density;
             float mu_t = mu_a + mu_s;
 
-            // Emission
+            // Emisión
             vec3 L_emission = u_emission_color.rgb * mu_a; 
 
-            // --- COMPUTE Ls(t) (In-Scattering) ---
-            // 4. "Use the obtained mu_s and Ls to our computation of the color" [cite: 46]
-            vec3 L_s = vec3(0.0);
-            
-            // Calculate L_i (Incoming Light)
+            // Luz incidente
             vec3 toLight = u_local_light_position - pos;
             float dist = length(toLight);
             float attenuation = 1.0 / (1.0 + dist * dist);
-            
-            // Get Transmittance along light ray (The result of Step 3)
             float T_light = getLightTransmittance(pos);
-            
-            // Isotropic Phase Function: f_x = 1 / 4pi [cite: 51]
 
-            float f_x = (1.0 / (4.0 * PI));
-            
+            // Henyey-Greenstein
+            float cosTheta = dot(normalize(toLight), -rd); // Angle between light dir and view dir
+            float g2 = g_value * g_value;
+            float f_x = (1.0 / (4.0 * PI)) * ((1.0 - g2) / pow(1.0 + g2 - 2.0 * g_value * cosTheta, 1.5));
+
             // L_i(x, w_i)
             vec3 L_i = u_light_color.rgb * u_light_intensity * T_light * attenuation;
-            
-            // Combine terms for Eq (2): L_s = Integral(f_x * L_i) * mu_s
-            // (Since it's a point light, the integral integral collapses to one direction)
-            L_s = L_i * f_x * mu_s;
 
-            // --- Accumulate ---
-            // Combine Scattering and Emission
+            // In-scattering
+            vec3 L_s = L_i * f_x * mu_s;
+
+            // Acumulación
             vec3 S = L_emission + L_s; 
-            
-            L += T * S * stepLength;
-            T *= exp(-mu_t * stepLength);
+            L += T * S * h;
+            T *= exp(-mu_t * h);
         }
 
-        if(T < 0.001) break; 
-        t += stepLength;
+        if (T < 0.001) break;
+        t += h;
     }
 
     L += T * ub_color;
